@@ -27,5 +27,4 @@ class DataRepository {
     return brazilCases.docs.where((d) => d.cityCod == 5103403).toList();
   }
 
-
 }
