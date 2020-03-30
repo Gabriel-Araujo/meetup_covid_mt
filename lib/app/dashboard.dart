@@ -18,60 +18,54 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _updateData() async {
-    var result = await DataRepository().fetchCovidCases();
+    final result = await DataRepository().fetchCovidCases();
     setState(() => _casesData = result);
   }
 
-  List<Widget> _buildCasesList() => _casesData.map((cc) => ListTile(
-      leading: CircleAvatar(
-        child: Text(cc.count.toString()),
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
-      ),
-      title: Text(cc.cityName),
-      subtitle: Text(cc.date),
-      trailing: const Icon(Icons.arrow_forward_ios),
-      onTap: () {
-        //
-      },
-      
-      ),
-    ).toList();
-
-  List<charts.Series<Doc, String>> _createChartData(){
-    return [
-      new charts.Series<Doc, String>(
-        id: 'Cases',
-        colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
-        domainFn: (Doc d, _) => d.date,
-        measureFn: (Doc d, _) => d.count,
-        data: _casesData,
+  List<Widget> _buildCasesList() => _casesData
+      .map(
+        (cc) => ListTile(
+          leading: CircleAvatar(
+            child: Text(cc.count.toString()),
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+          ),
+          title: Text(cc.cityName),
+          subtitle: Text(cc.date),
+          trailing: const Icon(Icons.arrow_forward_ios),
+          onTap: () {
+            //
+          },
+        ),
       )
-    ];
-  }
+      .toList();
+
+  List<charts.Series<Doc, String>> _createChartData() => [
+        charts.Series<Doc, String>(
+          id: 'Cases',
+          colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+          domainFn: (Doc d, _) => d.date,
+          measureFn: (Doc d, _) => d.count,
+          data: _casesData,
+        )
+      ];
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
-        title: Text('Coronavirus MT Tracker'),
+        title: const Text('Coronavirus MT Tracker'),
       ),
       body: RefreshIndicator(
         onRefresh: _updateData,
-        child: 
-          (null == _casesData)
-          ? const CircularProgressIndicator()
-          : ListView(
-            children: 
-              <Widget>[
-                Container(
-                  height: 182, 
-                  child: 
-                    charts.BarChart(_createChartData(), animate: true)
-                ,)]..addAll(_buildCasesList()),
-          ),
-      )
-    );
-  }
-  
+        child: (null == _casesData)
+            ? const CircularProgressIndicator()
+            : ListView(
+                children: <Widget>[
+                  Container(
+                    height: 182,
+                    child: charts.BarChart(_createChartData(), animate: true),
+                  )
+                ]..addAll(_buildCasesList()),
+              ),
+      ));
 }
